@@ -32,53 +32,60 @@ Instalation
 #### kind install
 The kind can be intalled following [kind Documentation](https://kind.sigs.k8s.io/docs/user/quick-start/). 
 
-### Requiriments
+------------------
+#### Requiriments
 ***
 - [Docker](https://docs.docker.com/engine/install/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
-------------------
+-----------
 ### To run it follow:
 There is too ways to run it:
-### Manualy. 
+#### Manual Instalation: 
 
-1.
-```console
+1. Clone the repository:
+```!#/bin/bash
 $ git clone https://github.com/gabrielknot/K8sProject
 ```
 
-2.
-```console
+2. Get into the repository directory:
+```!#/bin/bash
 $ cd K8sProject/kind
 ```
-3.
-```console
+3. Create a cluster with kind config. file: kind-config.yaml.
+```!#/bin/bash
 $ kind create cluster --config kind-config.yaml
 ```
-4.
-```console
+4. Apply the flannel pod-network: 
+```!#/bin/bash
 $ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 ```
-5.
-```console
+##### Metallb Setup:
+5. Create the metallb namespace: 
+```!#/bin/bash
 $ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/master/manifests/namespace.yaml
 ```
-6.
-```console
+6. Create the memberlist secrets:
+```!#/bin/bash
+$ kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)" 
+```
+7. Apply metallb manifest
+```!#/bin/bash
 $ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/master/manifests/metallb.yaml
 ```
-7.
-```console
-$ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/master/manifests/namespace.yaml
+8. Wait for metallb pods to have a status of Running:
+```!#/bin/bash
+$ kubectl get pods -n metallb-system --watch
 ```
-8.
-```console
-$ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/master/manifests/metallb.yaml
+9. Setup address pool used by loadbalancers
+----------
+To complete layer2 configuration, we need to provide metallb a range of IP addresses it controls. We want this range to be on the docker kindnetwork.
+```!#/bin/bash
+$ echo "      -  $( docker network inspect -f '{{.IPAM.Config}}' kind | sed 's/[^0-9]*//'  | awk '{print $1}' | sed 's/\.0/\.255/' | sed 's/\.0/\.200/' | sed 's/\/.*//g' )-$( docker network inspect -f '{{.IPAM.Config}}' kind | sed 's/[^0-9]*//'  | awk '{print $1}' | sed 's/\.0/\.255/' | sed 's/\.0/\.250/' | sed 's/\/.*//g' )" >> matallb-configmap.yaml
 ```
-
 ### Using Ansible
 
 3.
-```console
+```!#/bin/bash
 $ kind create cluster --config kind-config.yaml
 ```
 To run mysql contaner:
@@ -88,18 +95,18 @@ $ cd mysql-Docker && kubernetes-compose u
 running in current terminal section.
 or
 -----------
-```console
+```!#/bin/bash
 $ cd nginx-Docker && kubernetes-compose up -d
 ```
 running in background
 Stop it following:
 ----------------------
-```console
+```!#/bin/bash
 $ kubernetes-compose down
 ```
 
 -----------
-```console
+```!#/bin/bash
 $ cd nginx-Docker && kubernetes-compose down -v
 ```
 removig the created data volume
