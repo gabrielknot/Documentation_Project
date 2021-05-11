@@ -1,46 +1,42 @@
  
-K8s Chronos Example
+Aplicacao dos conhecimentos adquiridos/ Projeto DevOps
 ===========================
 
-Welcome to the Kubernetes Universe!
+Bem vimdo ao mundo DevOps!
 -----------
-This is a kubernetes cloud evironmet power example.
+Esse e um projeto exemplo, onde sao aplicadas algumas das ferramentas utilizadas por um engenheiro DevOps, na sua principal funcao, que e responsabilizar-se pelo  versionamento, entrega e infraestrutura de aplicoes.
 
-Each of these two directories contains a kubernetes-compose.yml file, which means, all you have to do is compose it up following the steps:
-
-The kubernetes 
+O Ansible
 ----------------------
 ----------------------
-The kubernetes is a container orchestrator. Wich means you can autoscale your aplications based on the ressoussement mangaemant power, cloud and the cluster computing to increase the clkoud computing power and server infrastructure managment. 
+O ansible e uma aplicacao de continous delivery. Ele e responsavel por automatizar processos na construcao da infraestrutura. Em uma grande aplicacao orientada a microsservico existem uma serie de dependencias que precisam ser instaladas e configuradas antes que a aplicacao seja executada. O que se torna extremamente lento, pricipalmente, se voce precisa configurar varias maquinas que compoem um cluster, ou ainda se precisa faze-lo sempre que alguem faz uma atualizacao no repositorio do codigo.
+
+O kubernetes 
+----------------------
+----------------------
+O kubernetes e a "estrela", ele e responsavel por orquestrar os containrers de uma aplicacao orientada a microsservico. Sua principal caracteristica que possibilita um alto grau de escalabilidade ja que por padrao o kubernetes gerencia esses containers dentro de um cluster, o que e muito importante para que em caso de uma grande aplicacao come;ar a "pesar" dentro de dois oumais computadores o engenheiro e capaz de alocar mais recurssos ao cluster, simplesmente adicionando um computador (chamado de node) a este mesmo cluster. Alem disso o kubernetes possui uma serie de outras ferramentas satelites como grafana e prometheus, que possibilitam um monitoramento profundo da "saude" do cluster.
 
 The Kind
 -------------
 -------------
-To simulate the cloud ambient with several machines and use the container power to dinamicaly manage our machine ressource we use kind. This application ca simulate a Kubernetes cluster using docker containers so using it we can focus on the cluster function wich means con6tainer ochestratiuon.
+O kind e uma distribuicao kubernetes focada em ambientes de desenvolvimento e aprendizado. Ele simula o comportamento de cluster a patir de containres docker, onde cada container representa uma maquina do cluster.
 
 #### Pros
-The kind is an easy way to simulate a Kubernees cluster. You can spend time just with your cluster deployments and services, without care about virtual machine (VM) ressources and his configurations. The kind suports too Control-plane HA multiple control plane-nodes.
-#### contras
-However the kind is just a development tool, you cant't deploy it in a real life service. 
+O kind e uma das ferramentas de desenvolvimento e aprendizado completa. Simula como um cluster se comporta em na maioria dos cenarios. Por exemplo em uma ferramentta de desenvolvimento que nao possui suporte a varios nos, o comportamento da aplicacao em ambiente de producao pode ser completamente diferente de um ambiante de producao, por que dentro de um cluster, podem haver pods setados com mais "afinidade" a um node do que a outro, por recursos alocados e ou recuros exclusivos daquele node, como mior capacidade de processamento de video por ex.
 
-You can use the kubeadm with the same configurations. This current setup will work in any bare-metal server, modifying only a thiny specific kind configuration parts.
-You may have to check the [Kubernetes Documentation](https://kubernetes.io/pt-br/docs/home/).
+#### contras
+O kind pode simular relativamente bem um ambiente produtivo, entretando, ele e unicamente recomenmdado a ambientes de desenvolvimento. por usar containers docker para simular um cluster, ele roda sobre a "placa de rede" virtual do docker, sendo assim herda suas limitacoes.
 
 Instalation
 ------------
 ------------
-#### kind install
-The kind can be intalled following [kind Documentation](https://kind.sigs.k8s.io/docs/user/quick-start/). 
-
-------------------
-#### Requiriments
+#### requisitos e suas instrucoes de instalacao:
 ***
-- [Docker](https://docs.docker.com/engine/install/)
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
+- [Git](https://docs.docker.com/engine/install/)
+- [Git](https://docs.docker.com/engine/install/)
 -----------
-### To run it follow:
-There is too ways to run it:
-#### Manual Instalation: 
+### Antes de instalar siga os seguintes passos para baixar a aplicacao:
+
 
 1. Clone the repository:
 ```!#/bin/bash
@@ -49,34 +45,13 @@ $ git clone https://github.com/gabrielknot/K8sProject
 
 2. Get into the repository directory:
 ```!#/bin/bash
-$ cd K8sProject/kind
+$ cd K8sProject/leaning_ansible
 ```
-3. Create a cluster with kind config. file: kind-config.yaml.
+3. Como mencionado antes o ansible e uma ferramenta de continous delivery e automatiza os processos da construcao da infraestrutura portanto basta substiuir a label \<server-ip-adress> dentro do arquivo "inventory" pelo ip de seu servidor e rodar o seguite comando:
+
 ```!#/bin/bash
-$ kind create cluster --config kind-config.yaml
+$ cd K8sProject/leaning_ansible && ansible-playbook kubernetes-setup/master-playbook.yaml -u '\<usuario da maquina cujo ip foi com acesso administrativo>' -p '<senha desse usuario>'
 ```
-4. Apply the flannel pod-network: 
-```!#/bin/bash
-$ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-```
-##### Metallb Setup:
-5. Create the metallb namespace: 
-```!#/bin/bash
-$ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/master/manifests/namespace.yaml
-```
-6. Create the memberlist secrets:
-```!#/bin/bash
-$ kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)" 
-```
-7. Apply metallb manifest
-```!#/bin/bash
-$ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/master/manifests/metallb.yaml
-```
-8. Wait for metallb pods to have a status of Running:
-```!#/bin/bash
-$ kubectl get pods -n metallb-system --watch
-```
-9. Setup address pool used by loadbalancers
 ----------
 To complete layer2 configuration, we need to provide metallb a range of IP addresses it controls. We want this range to be on the docker kindnetwork.
 ```!#/bin/bash
