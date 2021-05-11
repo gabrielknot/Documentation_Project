@@ -87,3 +87,23 @@ $ cd K8sProject/leaning_ansible && ansible-playbook kubernetes-setup/master-play
 ```
 4. Aguarde o termino da configuracao de seu servidor e pronto!
 ----------
+
+updates:
+descrever o funcionamento da imagem docker 
+descrever a configuracao padrao do ansible os familly
+descrever configuracao do ansible.cfg e sua respectiva ssh-key
+ ssh-copy-id -i ~/.ssh/ansible_rsa.pub root@194.195.218.110  
+ 
+ !uimportant
+ Setar o usuario no inverntory
+
+ Remover tasks desnecessaria
+
+
+ descrever os processos de autoscaling and recovery disaster
+
+stress cpu memory i/o 
+
+Apache ab teste de requisicoes
+
+
