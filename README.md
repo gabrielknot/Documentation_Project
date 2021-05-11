@@ -18,13 +18,36 @@ O kubernetes e a "estrela", ele e responsavel por orquestrar os containrers de u
 ## Funcionamento
 
 O kubernetes e uma especie de api, onde cada arquivo de manifesto descreve uma caracteristica do seu cluster, tais como a quantidadde de rplicas a versao, dentre outros
-### Pods
+### Abstracoes kubernetes:
+#### Pods
 Os pods sao uma abstracao do kubernetes que representa um grupo de no minimo um e no maximo (por padrao) dois containers, compoem a menor parte do cluster:
-![img](https://d33wubrfki0l68.cloudfront.net/fe03f68d8ede9815184852ca2a4fd30325e5d15a/98064/docs/tutorials/kubernetes-basics/public/images/module_03_pods.svg)
-### Deployment
+<img src="https://d33wubrfki0l68.cloudfront.net/fe03f68d8ede9815184852ca2a4fd30325e5d15a/98064/docs/tutorials/kubernetes-basics/public/images/module_03_pods.svg" width="900">
+#### Nodes
+Essa abstracao representa os membros do cluster, neste caso seus "workers" que sao partes componentes de qualquer cluster Kubernetes, nos nodes estao dispostos os pods como visto na imagem:
+<img src="https://d33wubrfki0l68.cloudfront.net/5cb72d407cbe2755e581b6de757e0d81760d5b86/a9df9/docs/tutorials/kubernetes-basics/public/images/module_03_nodes.svg" width="700">
+#### Deployment
+O deployment representa, como a imagem abaixo descreve, a versao e a quantidade de pods, que estarao dispostos no cluster; sua versao e sua disposicao entre os diferentes pods de forma geral em casos de atualizacao da aplicacao:
 
-O deployment funciona e um tipo de 
-### 
+<img src="https://storage.googleapis.com/cdn.thenewstack.io/media/2017/11/07751442-deployment.png" width="500">
+
+
+#### Service
+Nessa abstracao sao definidas as formas de comunicacao entre replicasets e uma rede, seja ela interna ou externa ao cluster. Funciona a partir de uma proxy interna do cluster com uma tabela de ips que compoem um determinado replicaset. Seus tipos sao:
+##### ClusterIP
+O ClusterIP cria uma interface de comunicacao interna do cluster expondo o replicaset somente dentro do cluster:
+
+<img src="https://d33wubrfki0l68.cloudfront.net/e351b830334b8622a700a8da6568cb081c464a9b/13020/images/docs/services-userspace-overview.svg" width="500">
+
+##### NodePort
+O Service do tipo NodePort faz um port-forward (mapeaento de porta) de um ClusterIP dentro do cluster para o a partir de uma proxy no node master:
+
+<img src="https://miro.medium.com/max/1700/1*I4j4xaaxsuchdvO66V3lAg.png" width="500">
+
+##### LoadBalancer
+O Service do tipo LoadBalancer e uma abstracao que designa um node para gerenciar os enderecamentos de cada acesso a um determinado pod, baseando-se na disponibilidade de recursos do node em que o mesmo esta insterido:
+
+<img src="https://miro.medium.com/max/913/0*YxZrrdmKZ4Hw2s1c.png" width="500">
+
 O Kind
 -------------
 -------------
@@ -36,18 +59,19 @@ O kind e uma das ferramentas de desenvolvimento e aprendizado completa. Simula c
 #### contras
 O kind pode simular relativamente bem um ambiente produtivo, entretando, ele e unicamente recomenmdado a ambientes de desenvolvimento. por usar containers docker para simular um cluster, ele roda sobre a "placa de rede" virtual do docker, sendo assim herda suas limitacoes.
 
-Instalation
+Instalacao
 ------------
 ------------
 #### requisitos e suas instrucoes de instalacao:
 ***
-- [Git](https://docs.docker.com/engine/install/)
-- [Git](https://docs.docker.com/engine/install/)
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
 -----------
 ### Antes de instalar siga os seguintes passos para baixar a aplicacao:
 
 
 1. Clone the repository:
+
 ```!#/bin/bash
 $ git clone https://github.com/gabrielknot/K8sProject
 ```
@@ -61,37 +85,5 @@ $ cd K8sProject/leaning_ansible
 ```!#/bin/bash
 $ cd K8sProject/leaning_ansible && ansible-playbook kubernetes-setup/master-playbook.yaml -u '\<usuario da maquina cujo ip foi com acesso administrativo>' -p '<senha desse usuario>'
 ```
+4. Aguarde o termino da configuracao de seu servidor e pronto!
 ----------
-To complete layer2 configuration, we need to provide metallb a range of IP addresses it controls. We want this range to be on the docker kindnetwork.
-```!#/bin/bash
-$ echo "      -  $( docker network inspect -f '{{.IPAM.Config}}' kind | sed 's/[^0-9]*//'  | awk '{print $1}' | sed 's/\.0/\.255/' | sed 's/\.0/\.200/' | sed 's/\/.*//g' )-$( docker network inspect -f '{{.IPAM.Config}}' kind | sed 's/[^0-9]*//'  | awk '{print $1}' | sed 's/\.0/\.255/' | sed 's/\.0/\.250/' | sed 's/\/.*//g' )" >> metallb/metallb-configmap.yaml
-```
-### Using Ansible
-
-3.
-```!#/bin/bash
-$ kind create cluster --config kind-config.yaml
-```
-To run mysql contaner:
------------
-$ cd mysql-Docker && kubernetes-compose u
-```
-running in current terminal section.
-or
------------
-```!#/bin/bash
-$ cd nginx-Docker && kubernetes-compose up -d
-```
-running in background
-Stop it following:
-----------------------
-```!#/bin/bash
-$ kubernetes-compose down
-```
-
------------
-```!#/bin/bash
-$ cd nginx-Docker && kubernetes-compose down -v
-```
-removig the created data volume
-> :warning: **-v flag means all your volume in the kubernetes will be lost**: Be very careful here!n
