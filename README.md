@@ -4,12 +4,64 @@ Aplicacao dos conhecimentos adquiridos/ Projeto DevOps
 
 Bem vimdo ao mundo DevOps!
 -----------
-Esse e um projeto exemplo, onde sao aplicadas algumas das ferramentas utilizadas por um engenheiro DevOps, na sua principal funcao, que e responsabilizar-se pelo  versionamento, entrega e infraestrutura de aplicoes.
+Esse e um projeto exemplo, onde sao aplicadas algumas das ferramentas utilizadas por um engenheiro DevOps, na sua principal funcao, que é responsabilizar-se pelo  versionamento, entrega e infraestrutura de aplicoes.
 
 O Ansible
 ----------------------
 ----------------------
-O ansible e uma aplicacao de continous delivery. Ele e responsavel por automatizar processos na construcao da infraestrutura. Em uma grande aplicacao orientada a microsservico existem uma serie de dependencias que precisam ser instaladas e configuradas antes que a aplicacao seja executada. O que se torna extremamente lento, pricipalmente, se voce precisa configurar varias maquinas que compoem um cluster, ou ainda se precisa faze-lo sempre que alguem faz uma atualizacao no repositorio do codigo.
+O ansible é uma aplicacao de Continuous Delivery. Ele é responsável por automatizar processos na construçao da infraestrutura e entrega da aplicaçaa. Em uma grande aplicacao orientada a microsservico existem uma serie de dependencias que precisam ser instaladas e configuradas antes que a aplicacao seja executada. O que se torna extremamente lento, pricipalmente, se voce precisa configurar varias maquinas que compoem um cluster, ou ainda se precisa faze-lo sempre que alguem faz uma atualizacao no repositorio do codigo.
+
+O Docker
+----------------------
+----------------------
+O docdker e uma ferramenta de conteinizacao de aplicacoes, o que quer dizer que vc pode rodar sua aplicacao em um ambiente virtual emulado em seu computador. Entrentato diferentemente de, por exemplo uma maquina virtual propriamente dita um docker container, compartilha o kernel do host. Assim voce pode construir ambientes virtuais dinamicamete alocados e encapsulados.
+
+## O Dockerfile
+
+O Dockerfile e um arquivo de configuracao do docker, onde instrucoes definem o comportamento de uma imagem.
+[Confira as principais instrucoes do docker aqui](https://dev.to/soutoigor/dockerfile-principais-comandos-e-instrucoes-2jpp#:~:text=O%20Dockerfile%20%C3%A9%20o%20meio,desta%20imagem%2C%20criamos%20nosso%20container.)
+
+### ipngnx
+
+Esta e a imagem que a aplicacao roda, ela foi construida para exibir o nome do [Pod](#/?id=pods) o [namespace](#/?id=namepsace) em que esta inserida e seu endereco de ip, fornecidos pelo [kubernetes](#/?id=kubernetes).
+
+#### ipngnx Dockerfile
+##### 1. [FROM](#) alpine as html
+- Usando uma imagem de referencia e a chamando de "html", nesse caso a imagem do alpine.
+
+##### 2. [WORKDIR ](#) html/
+- Criando o diretorio html. 
+
+##### 3. [RUN ](#)echo "<\h1>My pod name is: MY_POD_NAME<\/h1><\br><\/br><\h1>My pod namespace is: MY_POD_NAMESPACE<\/h1><\br><\/br><\h1>My pod ip is: MY_POD_IP<\/h1>" >> index.html  #remova as contraabaras
+- Exibindo o texto descrito entre aspas e colocando sua saída no arquivo index.html dentro do diretório html.
+
+##### 4. [FROM](#) nginx
+- Usando uma imagem do nginx.
+
+##### 5. [COPY](#) --from=html /html /usr/share/nginx/html
+- Copiando os arquivos do diretorio /html da referida [imagem html]()
+
+##### 6. [COPY](#) ./entryPoint.sh /
+- Copiando o [entryPoint.sh]() no mesmo diretorio do Dockerfile para o container.
+
+##### 7. [RUN ](#)chmod +x entryPoint.sh
+- Modificando as permissões de usuário para que o entryPoint.sh tenha permissões para ser executado.
+
+##### 8. [ENTRYPOINT](#) ["/entryPoint.sh"]
+- Shell script que substituti os valores do index.html pelos valores de suas respecivas variáveis deambiente.
+
+##### 9. [CMD](#) ["nginx", "-g", "daemon off;"]
+- Previne que o docker mate o processo nginx fazendo com que ele execute sempre em primeiro plano.
+
+#### ipngnx EntryPoint
+
+
+
+
+
+
+
+
 
 O kubernetes 
 ----------------------
@@ -69,7 +121,6 @@ Instalacao
 -----------
 ### Antes de instalar siga os seguintes passos para baixar a aplicacao:
 
-
 1. Clone the repository:
 
 ```!#/bin/bash
@@ -92,7 +143,7 @@ updates:
 descrever o funcionamento da imagem docker 
 descrever a configuracao padrao do ansible os familly
 descrever configuracao do ansible.cfg e sua respectiva ssh-key
- ssh-copy-id -i ~/.ssh/ansible_rsa.pub root@194.195.218.110  
+ssh-copy-id -i ~/.ssh/ansible_rsa.pub root@194.195.218.110  
  
  !uimportant
  Setar o usuario no inverntory
@@ -105,5 +156,6 @@ descrever configuracao do ansible.cfg e sua respectiva ssh-key
 stress cpu memory i/o 
 
 Apache ab teste de requisicoes
+
 
 
