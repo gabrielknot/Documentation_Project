@@ -11,6 +11,33 @@ O Ansible
 ----------------------
 O ansible é uma aplicacao de Continuous Delivery. Ele é responsável por automatizar processos na construçao da infraestrutura e entrega da aplicaçaa. Em uma grande aplicacao orientada a microsservico existem uma serie de dependencias que precisam ser instaladas e configuradas antes que a aplicacao seja executada. O que se torna extremamente lento, pricipalmente, se voce precisa configurar varias maquinas que compoem um cluster, ou ainda se precisa faze-lo sempre que alguem faz uma atualizacao no repositorio do codigo.
 
+```!#/bin/bash
+roles/
+    common/               # this hierarchy represents a "role"
+        tasks/            #
+            main.yml      #  <-- tasks file can include smaller files if warranted
+        handlers/         #
+            main.yml      #  <-- handlers file
+        templates/        #  <-- files for use with the template resource
+            ntp.conf.j2   #  <------- templates end in .j2
+        files/            #
+            bar.txt       #  <-- files for use with the copy resource
+            foo.sh        #  <-- script files for use with the script resource
+        vars/             #
+            main.yml      #  <-- variables associated with this role
+        defaults/         #
+            main.yml      #  <-- default lower priority variables for this role
+```
+
+## Um Playbook
+Um playbook é um arquivo de definiçao dos hosts do ansible. 
+
+## As tarefas 
+As tarefas propriamente ditas sao a menor parte do que compoe um playbook, uma tarefa é uma unica definiçao de uma unica caracteristica da máquina host.
+
+## As roles
+Numa role vc pode agrupar tarefas do mesmo seguimento bem como suas variaveis e seus handlers.
+
 O Docker
 ----------------------
 ----------------------
