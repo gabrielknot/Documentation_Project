@@ -4,7 +4,7 @@ Aplicacao dos conhecimentos adquiridos/ Projeto DevOps
 
 Bem vimdo ao mundo DevOps!
 -----------
-Esse e um projeto exemplo, onde sao aplicadas algumas das ferramentas utilizadas por um engenheiro DevOps, na sua principal funcao, que é responsabilizar-se pelo  versionamento, entrega e infraestrutura de aplicoes.
+Esse e um projeto exemplo, onde sao aplicadas algumas das ferramentas utilizadas por um engenheiro DevOps.
 
 O Ansible
 ----------------------
@@ -15,28 +15,33 @@ O ansible é uma aplicacao de Continuous Delivery. Ele é responsável por autom
 roles/
     common/               # this hierarchy represents a "role"
         tasks/            #
-            main.yml      #  <-- tasks file can include smaller files if warranted
+            main.yml      #  <-- arquivo de tarefas
         handlers/         #
-            main.yml      #  <-- handlers file
-        templates/        #  <-- files for use with the template resource
-            ntp.conf.j2   #  <------- templates end in .j2
+            main.yml      #  <-- arquivo de handlers
+        templates/        #  <-- diretorio de templates
+            ntp.conf.j2   #  <------- templates arquivo de template
         files/            #
-            bar.txt       #  <-- files for use with the copy resource
-            foo.sh        #  <-- script files for use with the script resource
+            bar.txt       #  <-- arquivos para usar como recursos copiáveis
+            foo.sh        #  <-- arquivos de script que podem ser executados durante a execuçao do playbook
         vars/             #
-            main.yml      #  <-- variables associated with this role
+            main.yml      #  <-- variaveis associadas a esta role
         defaults/         #
-            main.yml      #  <-- default lower priority variables for this role
+            main.yml      #  <-- default variáveis de menor prioridade
 ```
 
 ## Um Playbook
 Um playbook é um arquivo de definiçao dos hosts do ansible. 
 
-## As tarefas 
+## As tarefas/tasks
 As tarefas propriamente ditas sao a menor parte do que compoe um playbook, uma tarefa é uma unica definiçao de uma unica caracteristica da máquina host.
 
 ## As roles
 Numa role vc pode agrupar tarefas do mesmo seguimento bem como suas variaveis e seus handlers.
+
+## Os handlers
+Os handlers sao um tipo de "tarefa" que é executado quando algo ocorre diferente do esperado
+
+## Defaults
 
 O Docker
 ----------------------
@@ -81,7 +86,7 @@ Esta e a imagem que a aplicacao roda, ela foi construida para exibir o nome do [
 - Previne que o docker mate o processo nginx fazendo com que ele execute sempre em primeiro plano.
 
 #### ipngnx EntryPoint
-
+este é um shell script que verifica se as variaveis de ambiente foram setadas e as substtitui do index.htm que é exibido pelo nginx:
 
 
 
@@ -148,22 +153,30 @@ Instalacao
 -----------
 ### Antes de instalar siga os seguintes passos para baixar a aplicacao:
 
-1. Clone the repository:
+1. Clone o repositorio:
 
 ```!#/bin/bash
 $ git clone https://github.com/gabrielknot/K8sProject
 ```
 
-2. Get into the repository directory:
+2. Entre no repositorio:
 ```!#/bin/bash
 $ cd K8sProject/leaning_ansible
 ```
-3. Como mencionado antes o ansible e uma ferramenta de continous delivery e automatiza os processos da construcao da infraestrutura portanto basta substiuir a label \<server-ip-adress> dentro do arquivo "inventory" pelo ip de seu servidor e rodar o seguite comando:
+3. Como mencionado antes o ansible e uma ferramenta de continous delivery e automatiza os processos da construcao da infraestrutura. Entre em su diretório:
 
 ```!#/bin/bash
-$ cd K8sProject/leaning_ansible && ansible-playbook kubernetes-setup/master-playbook.yaml -u '\<usuario da maquina cujo ip foi com acesso administrativo>' -p '<senha desse usuario>'
+$ cd K8sProject/leaning_ansible
 ```
-4. Aguarde o termino da configuracao de seu servidor e pronto!
+
+4. Agoras para iniciar o playbook, basta substiuir a label \<server-ip-adress>, \<user-name> e \<ssh-key> dentro do arquivo "inventory" pelo ip de seu servidor e o usuario com permiswsoes de superusuario, e entao rodar o seguite comando:
+
+```!#/bin/bash
+$ cd K8sProject/leaning_ansible && ansible-playbook kubernetes-setup/master-playbook.yaml 
+```
+5. Aguarde o termino da configuracao de seu servidor e pronto!
+
+
 ----------
 
 updates:
