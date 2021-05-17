@@ -1,0 +1,95 @@
+/Users/mac/kubernetes-project/learning_ansible/kubernetes-setup/roles/
+├── apacheAb
+│   └── tasks
+│       └── main.yaml
+├── chartsInstall
+│   ├── defaults
+│   │   └── main.yaml
+│   ├── files
+│   │   └── ipnginx-chart
+│   │       ├── Chart.yaml
+│   │       ├── templates
+│   │       │   ├── NOTES.txt
+│   │       │   ├── _helpers.tpl
+│   │       │   ├── deployment.yaml
+│   │       │   ├── hpa.yaml
+│   │       │   ├── ingress.yaml
+│   │       │   ├── service.yaml
+│   │       │   ├── serviceaccount.yaml
+│   │       │   └── tests
+│   │       │       └── test-connection.yaml
+│   │       └── values.yaml
+│   └── tasks
+│       └── main.yaml
+├── clusterConfigure
+│   ├── defaults
+│   │   └── main.yaml
+│   ├── files
+│   │   └── kind-sample-cluster.yaml
+│   └── tasks
+│       └── main.yaml
+├── dockerInstall
+│   ├── defaults
+│   │   └── main.yaml
+│   ├── handlers
+│   │   └── main.yaml
+│   └── tasks
+│       └── main.yaml
+├── helmInstall
+│   ├── defaults
+│   │   └── main.yaml
+│   └── tasks
+│       └── main.yaml
+├── jenkinsInstall
+│   └── tasks
+│       └── main.yaml
+├── kindInstall
+│   ├── defaults
+│   │   └── main.yaml
+│   └── tasks
+│       └── main.yaml
+├── kubeadmSetup
+│   ├── defaults
+│   │   └── main.yaml
+│   └── tasks
+│       └── main.yaml
+├── kubectlInstall
+│   ├── defaults
+│   │   └── main.yaml
+│   ├── handlers
+│   │   └── main.yaml
+│   └── tasks
+│       └── main.yaml
+├── kubernetes
+│   └── files
+│       └── ipnginx-chart
+│           └── charts
+├── kubernetesInstall
+│   ├── defaults
+│   │   └── main.yaml
+│   └── tasks
+│       └── main.yaml
+├── metallbSetup
+│   ├── defaults
+│   │   └── main.yaml
+│   ├── files
+│   │   ├── kind-sample-cluster.yaml
+│   │   └── metallb-config-poll-addr.yaml
+│   └── tasks
+│       └── main.yaml
+├── nginxIngress
+│   ├── files
+│   │   └── deploy.yaml
+│   └── tasks
+│       └── main.yaml
+├── stressNgInstall
+│   └── tasks
+│       └── main.yaml
+└── stressNgTest
+    ├── files
+    │   ├── installStressNgInsideDocker.sh
+    │   └── stressNgTestsResult
+    └── tasks
+        └── main.yaml
+
+52 directories, 40 files

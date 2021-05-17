@@ -30,13 +30,84 @@ roles/
 ```
 
 ## Um Playbook
-Um playbook é um arquivo de definiçao das tarefas ou roles (conjunto de [tarefas](#/?id=namepsace)) que serao executadas nos hosts do ansible. 
+Um playbook é um arquivo de definiçao das tarefas ou roles (conjunto de [tarefas](#/?id=As-tarefas)) que serao executadas nos hosts do ansible. 
 
 ## As tarefas 
 As tarefas propriamente ditas sao a menor parte do que compoe um playbook, uma tarefa é uma unica definiçao de uma unica caracteristica da máquina host.
 
 ## As roles
 Numa role vc pode agrupar tarefas do mesmo seguimento bem como suas variaveis e seus handlers.
+
+# Roles no projeto
+A estrutura das roles do projeto seguem o seguinte padrao:
+
+```!#/bin/bash
+├── apacheAb # instalar apache ab
+│   └── tasks
+│       └── main.yaml
+├── chartsInstall # instalar os charts do ipnginx
+│   ├── defaults
+│   │   └── main.yaml
+│   ├── files 
+│   │   └── ipnginx-chart # diretorio do chart 
+│   │       ├── Chart.yaml
+│   │       ├── templates
+│   │       │   ├── NOTES.txt
+│   │       │   ├── _helpers.tpl
+│   │       │   ├── deployment.yaml
+│   │       │   ├── hpa.yaml
+│   │       │   ├── ingress.yaml
+│   │       │   ├── service.yaml
+│   │       │   ├── serviceaccount.yaml
+│   │       │   └── tests
+│   │       │       └── test-connection.yaml
+│   │       └── values.yaml
+│   └── tasks
+│       └── main.yaml
+├── dockerInstall # instalar docker 
+│   ├── defaults # variaveis padrao que descrevem os pacotes que devem ser instalados
+│   │   └── main.yaml
+│   ├── handlers
+│   │   └── main.yaml # Caso o serviço do docker nao estiver iniciado o handler o inicia
+│   └── tasks
+│       └── main.yaml # instala o docker 
+├── helmInstall # instala o helm (gerenciador de pacotes do kuberneetes)
+│   ├── defaults
+│   │   └── main.yaml
+│   └── tasks
+│       └── main.yaml
+├── kubeadmSetup 
+│   ├── defaults # variaveis de inicializaçao do cluster
+│   │   └── main.yaml
+│   └── tasks  # inicia o cluster
+│       └── main.yaml
+├── kubernetesInstall # instala o kubelet kubeadm e kubectl
+│   ├── defaults
+│   │   └── main.yaml # repositorio ppa e lista de apps
+│   └── tasks
+│       └── main.yaml # instala o repositorio ppa
+├── nginxIngress
+│   ├── files
+│   │   └── deploy.yaml
+│   └── tasks
+│       └── main.yaml
+├── stressNgInstall # instala o stress-ng 
+│   └── tasks
+├── apacheTest # testa a performace do server em conexoes paralelas
+│   └── tasks
+│       └── main.yaml
+│       └── main.yaml
+└── stressNgTest # testa o stress-ng 
+    └── tasks
+        └── main.yaml
+
+```
+
+# Playbooks do projeto:
+## master-playbook.yaml
+Este playbook é o playbook responsável por configurar a infraestrutura
+## test-playbook.yaml
+Este é o playbook que executa os testes, tanto do stress-ng quanto do apache bench
 
 O Docker
 ----------------------
@@ -81,8 +152,25 @@ Esta e a imagem que a aplicacao roda, ela foi construida para exibir o nome do [
 - Previne que o docker mate o processo nginx fazendo com que ele execute sempre em primeiro plano.
 
 #### ipngnx EntryPoint
+O entripoint dessa imagem, verifica se as variáveis de ambiente estao setadas, e entao, aplica no index.html; de referencia através de um "sed"
+```!#/bin/bash
+set -xe
+: "${MY_POD_NAME?Need an api url}"
+
+set -xe
+: "${MY_POD_IP?Need an api url}"
+set -xe
+: "${MY_POD_NAMESPACE?Need an api url}"
+
+sed -i "s/MY_POD_NAMESPACE/$MY_POD_NAMESPACE/g" /usr/share/nginx/html/index.html
+
+sed -i "s/MY_POD_NAME/$MY_POD_NAME/g" /usr/share/nginx/html/index.html
 
 
+sed -i "s/MY_POD_IP/$MY_POD_IP/g" /usr/share/nginx/html/index.html
+
+exec "$@"
+```
 
 
 
