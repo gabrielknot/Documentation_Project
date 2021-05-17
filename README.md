@@ -248,10 +248,29 @@ $ cd K8sProject/leaning_ansible
 ```
 3. Como mencionado antes o ansible e uma ferramenta de continous delivery e automatiza os processos da construcao da infraestrutura portanto basta substiuir a label \<server-ip-adress> dentro do arquivo "inventory" pelo ip de seu servidor e rodar o seguite comando:
 
+
 ```!#/bin/bash
-$ cd K8sProject/leaning_ansible && ansible-playbook kubernetes-setup/master-playbook.yaml -u '\<usuario da maquina cujo ip foi com acesso administrativo>' -p '<senha desse usuario>'
+$ cd K8sProject/leaning_ansible 
+```
+```!#/bin/bash
+$ sed -i 's/PATH_CHAVEPRIVADA/<caminho para a chave privada que o ansible usará para se conectar ao servidor> ./inventory'
+```
+```!#/bin/bash
+$ ssh-copy-id -i <path chave publica par da chave privada ssh que voce configurou no "inventory"> root@server
+```
+
+```!#/bin/bash
+$ ansible-playbook kubernetes-setup/master-playbook.yaml 
 ```
 4. Aguarde o termino da configuracao de seu servidor e pronto!
+
+## Executando os testes:
+Após o ansible encerrar a configuraçao do host execute os testes:
+1. 
+
+```!#/bin/bash
+$ ansible-playbook kubernetes-setup/test-playbook.yaml 
+```
 ----------
 
 updates:
