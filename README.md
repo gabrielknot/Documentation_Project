@@ -1,4 +1,4 @@
- 
+
 Aplicacao dos conhecimentos adquiridos/ Projeto DevOps
 ===========================
 
@@ -214,17 +214,6 @@ O Service do tipo NodePort faz um port-forward (mapeaento de porta) de um Cluste
 O Service do tipo LoadBalancer e uma abstracao que designa um node para gerenciar os enderecamentos de cada acesso a um determinado pod, baseando-se na disponibilidade de recursos do node em que o mesmo esta insterido:
 
 <img src="https://miro.medium.com/max/913/0*YxZrrdmKZ4Hw2s1c.png" width="500">
-
-O Kind
--------------
--------------
-O kind e uma distribuicao kubernetes focada em ambientes de desenvolvimento e aprendizado. Ele simula o comportamento de cluster a patir de containres docker, onde cada container representa uma maquina do cluster.
-
-#### Pros
-O kind e uma das ferramentas de desenvolvimento e aprendizado completa. Simula como um cluster se comporta em na maioria dos cenarios. Por exemplo em uma ferramentta de desenvolvimento que nao possui suporte a varios nos, o comportamento da aplicacao em ambiente de producao pode ser completamente diferente de um ambiante de producao, por que dentro de um cluster, podem haver pods setados com mais "afinidade" a um node do que a outro, por recursos alocados e ou recuros exclusivos daquele node, como mior capacidade de processamento de video por ex.
-
-#### contras
-O kind pode simular relativamente bem um ambiente produtivo, entretando, ele e unicamente recomenmdado a ambientes de desenvolvimento. por usar containers docker para simular um cluster, ele roda sobre a "placa de rede" virtual do docker, sendo assim herda suas limitacoes.
 
 Instalacao
 ------------
