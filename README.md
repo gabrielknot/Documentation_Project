@@ -13,20 +13,20 @@ O ansible é uma aplicacao de Continuous Delivery. Ele é responsável por autom
 
 ```!#/bin/bash
 roles/
-    common/               # this hierarchy represents a "role"
+    common/               # essa é a estrutura de arquivoos de uma "role"
         tasks/            #
-            main.yml      #  <-- tasks file can include smaller files if warranted
+            main.yml      #  <-- o diretorio tasks executa tarefas no host especificatdo no playbook
         handlers/         #
-            main.yml      #  <-- handlers file
-        templates/        #  <-- files for use with the template resource
-            ntp.conf.j2   #  <------- templates end in .j2
+            main.yml      #  <-- handlers, lida com os erros e condiçoes nao satisfeitas
+        templates/        #  <-- arquivos que servem de recursos de templates
+            ntp.conf.j2   #  <------- os templates terminam com .j2
         files/            #
-            bar.txt       #  <-- files for use with the copy resource
-            foo.sh        #  <-- script files for use with the script resource
+            bar.txt       #  <-- arquivos usados como recursos de cópia
+            foo.sh        #  <-- arquivos de script para serem usados como recursos de script
         vars/             #
-            main.yml      #  <-- variables associated with this role
+            main.yml      #  <-- variáveis
         defaults/         #
-            main.yml      #  <-- default lower priority variables for this role
+            main.yml      #  <-- default, sao variáveis padrao, o que significa que, caso haja uma variável com o mesmo nome, o valor utilizado será o da variável
 ```
 
 ## Um Playbook
@@ -254,42 +254,16 @@ $ cd K8sProject/leaning_ansible
 ```
 ```!#/bin/bash
 $ sed -i 's/PATH_CHAVEPRIVADA/<caminho para a chave privada que o ansible usará para se conectar ao servidor> ./inventory'
-```
-```!#/bin/bash
 $ ssh-copy-id -i <path chave publica par da chave privada ssh que voce configurou no "inventory"> root@server
-```
-
-```!#/bin/bash
 $ ansible-playbook kubernetes-setup/master-playbook.yaml 
 ```
 4. Aguarde o termino da configuracao de seu servidor e pronto!
 
 ## Executando os testes:
-Após o ansible encerrar a configuraçao do host execute os testes:
-1. 
+
+1. Após o ansible encerrar a configuraçao do host execute os testes: 
 
 ```!#/bin/bash
 $ ansible-playbook kubernetes-setup/test-playbook.yaml 
 ```
 ----------
-
-updates:
-descrever o funcionamento da imagem docker 
-descrever a configuracao padrao do ansible os familly
-descrever configuracao do ansible.cfg e sua respectiva ssh-key
-ssh-copy-id -i ~/.ssh/ansible_rsa.pub root@194.195.218.110  
- 
- !uimportant
- Setar o usuario no inverntory
-
- Remover tasks desnecessaria
-
-
- descrever os processos de autoscaling and recovery disaster
-
-stress cpu memory i/o 
-
-Apache ab teste de requisicoes
-
-
-
