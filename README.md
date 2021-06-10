@@ -42,73 +42,175 @@ Numa role vc pode agrupar tarefas do mesmo seguimento bem como suas variaveis e 
 A estrutura das roles do projeto seguem o seguinte padrao:
 
 ```!#/bin/bash
-├── apacheAb # instalar apache ab
+kubernetes-setup/roles
+├── nome-descritivo
+│   └── tasks+ <-- 
+│       └── main.yaml
+├── apacheTest
+│   ├── files
+│   │   └── installStressNgInsideDocker.sh
 │   └── tasks
 │       └── main.yaml
-├── chartsInstall # instalar os charts do ipnginx
+├── dockerInstall
 │   ├── defaults
-│   │   └── main.yaml
-│   ├── files 
-│   │   └── ipnginx-chart # diretorio do chart 
-│   │       ├── Chart.yaml
-│   │       ├── templates
-│   │       │   ├── NOTES.txt
-│   │       │   ├── _helpers.tpl
-│   │       │   ├── deployment.yaml
-│   │       │   ├── hpa.yaml
-│   │       │   ├── ingress.yaml
-│   │       │   ├── service.yaml
-│   │       │   ├── serviceaccount.yaml
-│   │       │   └── tests
-│   │       │       └── test-connection.yaml
-│   │       └── values.yaml
-│   └── tasks
-│       └── main.yaml
-├── dockerInstall # instalar docker 
-│   ├── defaults # variaveis padrao que descrevem os pacotes que devem ser instalados
 │   │   └── main.yaml
 │   ├── handlers
-│   │   └── main.yaml # Caso o serviço do docker nao estiver iniciado o handler o inicia
+│   │   └── main.yaml
 │   └── tasks
-│       └── main.yaml # instala o docker 
-├── helmInstall # instala o helm (gerenciador de pacotes do kuberneetes)
+│       └── main.yaml
+├── helmInstall
 │   ├── defaults
 │   │   └── main.yaml
 │   └── tasks
 │       └── main.yaml
-├── kubeadmSetup 
-│   ├── defaults # variaveis de inicializaçao do cluster
-│   │   └── main.yaml
-│   └── tasks  # inicia o cluster
-│       └── main.yaml
-├── kubernetesInstall # instala o kubelet kubeadm e kubectl
+├── kubeadmSetup
 │   ├── defaults
-│   │   └── main.yaml # repositorio ppa e lista de apps
+│   │   └── main.yaml
 │   └── tasks
-│       └── main.yaml # instala o repositorio ppa
+│       └── main.yaml
+├── kubeconfigSetup
+│   └── tasks
+│       └── main.yaml
+├── kubectlInstall
+│   ├── defaults
+│   │   └── main.yaml
+│   ├── handlers
+│   │   └── main.yaml
+│   └── tasks
+│       └── main.yaml
+├── kubernetesInstall
+│   ├── defaults
+│   │   └── main.yaml
+│   └── tasks
+│       └── main.yaml
+├── metallbSetup
+│   ├── defaults
+│   │   └── main.yaml
+│   ├── files
+│   │   ├── kind-sample-cluster.yaml
+│   │   └── metallb-config-poll-addr.yaml
+│   └── tasks
+│       └── main.yaml
+├── metricsServer
+│   ├── files
+│   │   └── components.yaml
+│   └── tasks
+│       └── main.yaml
 ├── nginxIngress
 │   ├── files
 │   │   └── deploy.yaml
 │   └── tasks
 │       └── main.yaml
-├── stressNgInstall # instala o stress-ng 
-│   └── tasks
-├── apacheTest # testa a performace do server em conexoes paralelas
+├── stressNgInstall
 │   └── tasks
 │       └── main.yaml
-│       └── main.yaml
-└── stressNgTest # testa o stress-ng 
+└── stressNgTest
+    ├── files
+    │   └── installStressNgInsideDocker.sh
     └── tasks
         └── main.yaml
-
 ```
 
 # Playbooks do projeto:
 ## master-playbook.yaml
 Este playbook é o playbook responsável por configurar a infraestrutura
+Suas roles sao:
+
+```!#/bin/bash
+...
+├── apacheAb
+│   └── tasks
+│       └── main.yaml
+├── dockerInstall
+│   ├── defaults
+│   │   └── main.yaml
+│   ├── handlers
+│   │   └── main.yaml
+│   └── tasks
+│       └── main.yaml
+├── helmInstall
+│   ├── defaults
+│   │   └── main.yaml
+│   └── tasks
+│       └── main.yaml
+├── kubeadmSetup
+│   ├── defaults
+│   │   └── main.yaml
+│   └── tasks
+│       └── main.yaml
+├── kubeconfigSetup
+│   └── tasks
+│       └── main.yaml
+├── kubectlInstall
+│   ├── defaults
+│   │   └── main.yaml
+│   ├── handlers
+│   │   └── main.yaml
+│   └── tasks
+│       └── main.yaml
+├── kubernetesInstall
+│   ├── defaults
+│   │   └── main.yaml
+│   └── tasks
+│       └── main.yaml
+├── metallbSetup
+│   ├── defaults
+│   │   └── main.yaml
+│   ├── files
+│   │   ├── kind-sample-cluster.yaml
+│   │   └── metallb-config-poll-addr.yaml
+│   └── tasks
+│       └── main.yaml
+├── metricsServer
+│   ├── files
+│   │   └── components.yaml
+│   └── tasks
+│       └── main.yaml
+├── nginxIngress
+│   ├── files
+│   │   └── deploy.yaml
+│   └── tasks
+│       └── main.yaml
+├── stressNgInstall
+│   └── tasks
+│       └── main.yaml
+...
+```
 ## test-playbook.yaml
 Este é o playbook que executa os testes, tanto do stress-ng quanto do apache bench
-
+```!#/bin/bash
+...
+└── stressNgTest
+    ├── files
+    │   └── installStressNgInsideDocker.sh
+    └── tasks
+        └── main.yaml
+...
+├── apacheTest
+│   ├── files
+│   │   └── installStressNgInsideDocker.sh
+│   └── tasks
+│       └── main.yaml
+...
+```
+## kubeconfig-playbook.yaml
+Este é o playbook que aplica o kubeconfig do server para a maquina local, fazendo com que nosso cluster seja acessivel de dentro de nossa maquina local.
+```!#/bin/bash
+...
+├── kubeconfigSetup
+│   └── tasks
+│       └── main.yaml
+...
+```
+## deploy-playbook.yaml
+Este é o playbook que aplica o deploy no cluster.
+```!#/bin/bash
+...
+├── deploySetup
+│   └── tasks
+│       └── main.yaml
+...
+```
 O Docker
 ----------------------
 ----------------------
@@ -119,65 +221,110 @@ O docdker e uma ferramenta de conteinizacao de aplicacoes, o que quer dizer que 
 O Dockerfile e um arquivo de configuracao do docker, onde instrucoes definem o comportamento de uma imagem.
 [Confira as principais instrucoes do docker aqui](https://dev.to/soutoigor/dockerfile-principais-comandos-e-instrucoes-2jpp#:~:text=O%20Dockerfile%20%C3%A9%20o%20meio,desta%20imagem%2C%20criamos%20nosso%20container.)
 
-### ipngnx
+### gabrielknot/php_nginx_
 
-Esta e a imagem que a aplicacao roda, ela foi construida para exibir o nome do [Pod](#/?id=pods) o [namespace](#/?id=namepsace) em que esta inserida e seu endereco de ip, fornecidos pelo [kubernetes](#/?id=kubernetes).
+Esta e uma imagem que armazena e serve a aplicacao deste repositorio [git](https://github.com/lucasdantas2014/exercicio_chronos), construida por Lucas Dantas.
 
-#### ipngnx Dockerfile
-##### 1. [FROM](#) alpine as html
-- Usando uma imagem de referencia e a chamando de "html", nesse caso a imagem do alpine.
+#### gabrielknot/php_nginx Dockerfile
 
-##### 2. [WORKDIR ](#) html/
-- Criando o diretorio html. 
+##### 1. [FROM](#) php:7.4-fpm
+- Usa a imagem do php-fpm de referencia
+##### 2. [RUN](#) apt-get update && apt-get install -y \
+	    git \
+	    curl \
+	    libpng-dev \
+	    libonig-dev \
+	    libxml2-dev \
+	    zip \
+	    unzip \
+	    supervisor \
+	    nginx
+##### 3. [RUN](#) docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+- Instala as dependencias 
+##### 4. [RUN](#) apt-get clean && rm -rf /var/lib/apt/lists/*
+- Remove a lista de repositorios
+##### 5. [COPY](#) supervisord.conf /etc/supervisor/conf.d/php_nginx.conf
+- Copia o arquivos de configuracao do supervisor
+##### 6. [COPY](#) --from=composer /usr/bin/composer /usr/local/bin/composer
+- Instala o composer  
+##### 7. [COPY](#) . /app
+- Copia os arquivos da aplicacao para dentro do container
+##### 8. [WORKDIR](#) /app
+- Dentro do container o diretorio corrente agora e o "/app"
+##### 9. [RUN](#) composer install
+- Instala as dependencias da aplicacao laravel
+##### 10. [RUN](#) chmod -R www-data:www-data /app
+- Da pemissoes de acesso ao usuario do nginx
+##### 11. [CMD](#) ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
+- Inicia o supervisor com seu arquivo de configuracao
 
-##### 3. [RUN ](#)echo "<\h1>My pod name is: MY_POD_NAME<\/h1><\br><\/br><\h1>My pod namespace is: MY_POD_NAMESPACE<\/h1><\br><\/br><\h1>My pod ip is: MY_POD_IP<\/h1>" >> index.html  #remova as contraabaras
-- Exibindo o texto descrito entre aspas e colocando sua saída no arquivo index.html dentro do diretório html.
+## O nginx
 
-##### 4. [FROM](#) nginx
-- Usando uma imagem do nginx.
+O nginx e resposavel por servir a aplicacao. Apesar de ser um servidor web e nao ter capacidade de inerpretar codigo php, o nginx consegue servir uma aplicacao laravel, comunicando-se com o [php-fpm](#php-fpm) (o gerenciador de processos do php), tanto via sock quanto via rede local, tornando-se capaz de servir qualquer view do php.
 
-##### 5. [COPY](#) --from=html /html /usr/share/nginx/html
-- Copiando os arquivos do diretorio /html da referida [imagem html]()
+### As configuracoes do nginx e php-fpm
 
-##### 6. [COPY](#) ./entryPoint.sh /
-- Copiando o [entryPoint.sh]() no mesmo diretorio do Dockerfile para o container.
+Seu arquivo de configuracao no caso dessa aplicacao e definido pelo [Kubernetes](#Kubernetes), atraves de um configmap.
 
-##### 7. [RUN ](#)chmod +x entryPoint.sh
-- Modificando as permissões de usuário para que o entryPoint.sh tenha permissões para ser executado.
+```nginx.conf
+...
+    server {
+            listen       80; <-- Prota em que o nginx ouvira as requisicoes
+            listen       [::]:80;<--|
+            root /www/app/public; <-- rota onde os arquivos servidos pelo nginx extao
+            server_name  _;
+            index index.php index.html index.htm; <-- Arquivo principal 
+            
+            location = /favicon.ico { access_log off; log_not_found off; }
+            location = /robots.txt  { access_log off; log_not_found off; }
 
-##### 8. [ENTRYPOINT](#) ["/entryPoint.sh"]
-- Shell script que substituti os valores do index.html pelos valores de suas respecivas variáveis deambiente.
+            location / {
+              try_files $uri $uri/ /index.php?$query_string; 
+            }
 
-##### 9. [CMD](#) ["nginx", "-g", "daemon off;"]
-- Previne que o docker mate o processo nginx fazendo com que ele execute sempre em primeiro plano.
+            location ~ \.php$ {
+              try_files $uri /index.php =404;
+              fastcgi_split_path_info ^(.+\.php)(/.+)$; 
+              fastcgi_pass 127.0.0.1:9000; <-- Porta onde ocorrera a comunicacao entre o php-fpm e o nginx
+              fastcgi_index index.php;
+              fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+              include fastcgi_params;
+              fastcgi_intercept_errors off;
+              fastcgi_buffer_size 16k;
+              fastcgi_buffers 4 16k;
+              fastcgi_connect_timeout 300;
+              fastcgi_send_timeout 300;
+              fastcgi_read_timeut 300;
+            }
+            error_page 404 /404.html;
+              location = /40x.html { <-- Em caso de erro, paginas que serao servidas -|
+            }                                        |                               
+                                                     |
+            error_page 500 502 503 504 /50x.html; <--|
+              location = /50x.html {
+            }
+        }
 
-#### ipngnx EntryPoint
-O entripoint dessa imagem, verifica se as variáveis de ambiente estao setadas, e entao, aplica no index.html; de referencia através de um "sed"
-```!#/bin/bash
-set -xe
-: "${MY_POD_NAME?Need an api url}"
-
-set -xe
-: "${MY_POD_IP?Need an api url}"
-set -xe
-: "${MY_POD_NAMESPACE?Need an api url}"
-
-sed -i "s/MY_POD_NAMESPACE/$MY_POD_NAMESPACE/g" /usr/share/nginx/html/index.html
-
-sed -i "s/MY_POD_NAME/$MY_POD_NAME/g" /usr/share/nginx/html/index.html
 
 
-sed -i "s/MY_POD_IP/$MY_POD_IP/g" /usr/share/nginx/html/index.html
-
-exec "$@"
+...
 ```
 
-
-
-
-
-
-
+```www.conf
+...
+    [www]
+user = www-data <-- Ususario do nginx quem ira servir a aplicacao
+group = www-data <-- Grupo do nginx quem ira servir a aplicacao (neste caso o nginx)
+listen = 127.0.0.1:9000 <-- Porta de comunicacao com o server da aplicaco
+pm = dynamic <-- O numero de processos sera dinamico conforme a demanda do servidor
+pm.max_children = 20 <-- numero maximo de processos filhos do php fpm
+pm.start_servers = 3 <-- numero inicial de processos do php fpm
+pm.min_spare_servers = 2 <-- numero minimo de processos em espera
+pm.max_spare_servers = 5 <-- numero max de processos em espera
+pm.max_requests = 200 <-- numero maximo de requisicoes 
+php_admin_flag[log_errors] = on <-- logs exibidos na tela, somente em desenvolvimento
+...
+```
 O kubernetes 
 ----------------------
 ----------------------
@@ -215,6 +362,79 @@ O Service do tipo LoadBalancer e uma abstracao que designa um node para gerencia
 
 <img src="https://miro.medium.com/max/913/0*YxZrrdmKZ4Hw2s1c.png" width="500">
 
+
+O Deploy e o helm
+----------------------
+---------------------
+
+O deploy da aplicacao e feito utilizando o gerenciador de pacotes do kubernetes, o helm. Com ele voce pode, facilmente versionar as diversas aplicacoes que rodam no seu cluster. O helm utiliza helm charts, no chart ficam todas as configuracoes das aplicacoes que rodam no seu cluster. 
+
+Na nossa aplicacao por exemplo funciona assim:
+```!#/bin/bash
+└── laravel-app
+    ├── Chart.yaml
+    ├── backup
+    ├── dry-run
+    ├── templates
+    │   ├── NOTES.txt
+    │   ├── _helpers.tpl
+    │   ├── configmap-nginx.yaml
+    │   ├── configmap-php-fpm.yaml
+    │   ├── configmap-php.yaml
+    │   ├── deployment.yaml
+    │   ├── hpa.yaml
+    │   ├── ingress.yaml
+    │   ├── secret.yaml
+    │   ├── service.yaml
+    │   ├── serviceaccount.yaml
+    │   └── tests
+    │       └── test-connection.yaml
+    └── values.yaml
+
+```
+## Executando os testes:
+
+1. Após o ansible encerrar a configuraçao do host execute os testes: 
+```!#/bin/bash
+$ ansible-playbook kubernetes-setup/test-playbook.yaml 
+```
+
+Esse teste, utilizando-se do [apache bench(ab)] testa a capacidade da aplicacao de receber requisicoes simultaneas.
+
+#### Atencao !
+O teste esta dimensionado para utilizar o maximo de recursos da maquina, rodando em um cluster kubernetes, com as segintes configuracoes:
+- Um unico node (master e worker ao mesmo tempo)
+- 8gb ram 4 cores
+Somente o kubeadm consome 2 cores e 2gb, sendo assim dadas as limitascoes vamos aos seus resultados:
+- Para evitar problemas, como conexao recusada pelo cloud provider, todos os testes rodam no servidor o que, em nossos testes consumiu em media 14% de de cpu.
+
+### Resultados
+
+- Falha na requisicao  86622 - razao: reponse time > 30s 
+- 551 req/s
+- Min recurso por pod - cpu: 300m (milicores) - ram 256Mi (megabytes)
+- Max recurso por pod - cpu: 700m (milicores) - ram 400Mi (megabytes)
+- Qantidade minima de pod's 1
+- Quantidade maxima de pod's 5
+
+
+### Problemas e melhorias futuras
+#### Mysql
+Um dos testes que foi feito, foi utilizar a aplicacao enquanto se faziam os testes de requisicoes. Ao entrar na parte de cadastro de clientes, o laravel retornava um log de erro ao tentar executar um foreach pela query dos estados. Dados esses responsaveis pela exibicao dos estados na tag "<select><option>Estado</option></select>" e somente na rota de cadastro "/novo_cliente".
+
+Apos alguns testes, e observacoes do log do pod do mysql, concluimos que a razao da ocorrencia intermitente desse problema se deve ao fato de que existe uma limitacao de [de tempo para que uma conexao seja estabelecida](https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html), [por padrao no mysql esse periodo de estabelecimento de conexao e de 10s](https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html). Sendo assim caso o pod tenha feito uma conexao que exceda esse parametro ele perdera a conexao com o banco de dados e so podera reestabelece-la, caso tente novamente efetuar uma conexao com o banco de dados e consica estabelecer comunicacao em menos de 10s.
+##### Causas 
+A principal causa e a limitacao de recursos do pod. Com isso o mysql reduz sua capacidade de paralelismo fazendo com que as algumas das conexoes nao executem a tempo.
+##### Possiveis solucoes
+- Maximizar os recursos do pod.
+
+O que, dado as caracteristicas do cluster necessario aumento de recursos da infraestrutura, ja que trabalha no limite.
+- Aumentar a tolerancia de tempo para o estabelecimento de coneccoes.
+
+Dadas as caracteristicas da aplicacao, um tempo de resposta maior do banco de dados nao afeta a experiencia do usuario. Visto que, no cadastro a so e acessada na tag "<select><option>Estado</option></select>" e na exibicao dos clientes cadasGGtrados.
+
+
+
 Instalacao
 ------------
 ------------
@@ -222,11 +442,10 @@ Instalacao
 ***
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 - [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
------------
+
 ### Antes de instalar siga os seguintes passos para baixar a aplicacao:
 
 1. Clone the repository:
-
 ```!#/bin/bash
 $ git clone https://github.com/gabrielknot/K8sProject
 ```
@@ -236,8 +455,6 @@ $ git clone https://github.com/gabrielknot/K8sProject
 $ cd K8sProject/leaning_ansible
 ```
 3. Como mencionado antes o ansible e uma ferramenta de continous delivery e automatiza os processos da construcao da infraestrutura portanto basta substiuir a label \<server-ip-adress> dentro do arquivo "inventory" pelo ip de seu servidor e rodar o seguite comando:
-
-
 ```!#/bin/bash
 $ cd K8sProject/leaning_ansible 
 ```
@@ -247,12 +464,3 @@ $ ssh-copy-id -i <path chave publica par da chave privada ssh que voce configuro
 $ ansible-playbook kubernetes-setup/master-playbook.yaml 
 ```
 4. Aguarde o termino da configuracao de seu servidor e pronto!
-
-## Executando os testes:
-
-1. Após o ansible encerrar a configuraçao do host execute os testes: 
-
-```!#/bin/bash
-$ ansible-playbook kubernetes-setup/test-playbook.yaml 
-```
-----------
