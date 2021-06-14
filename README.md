@@ -434,7 +434,24 @@ O que, dado as caracteristicas do cluster necessario aumento de recursos da infr
 Dadas as caracteristicas da aplicacao, um tempo de resposta maior do banco de dados nao afeta a experiencia do usuario. Visto que, no cadastro a so e acessada na tag "<select><option>Estado</option></select>" e na exibicao dos clientes cadasGGtrados.
 
 
+O Jenkins
+----------------------
+---------------------
+O Jenkins e uma ferramenta de [Continous Integration]() e [Countinous deployment](), serve para automatizar processos de desenvolvimento, como adimissao automatizada de commits e tambem e capas de fazer o deploy automatico dos codigos de uma ou mais branches de um repositorio. O que economiza tempo e possibilita uma entrega continua do servico sem atrasos, e ou sua aplicacao passar horas sem funcionar por conta de uma feature.
+O versionamento do codigo e uma ferramento de automatizacao de processos de integracao e de deploy como o jenkins, unidos podem evitar catastrofe. 
 
+Imagine um cenario onde e feito um deploy em uma apliccao numa sexta feira, e no domigo apos um pico inesperado de acessos a aplicacao "quebra", um cenario muito estranho para sua equipe visto que na versao anterior um fluxo ainda maior de acessos acontecia com uma certa frequencia. 
+Apos esse problema temos algumas possiveis solucoes, colocar o site em manutencao enquanto manualmente, voce e sua equipe fazem o deploy de uma versao anterior. Ficar trnquilo pois um trigger automatizado e capaz de voltar tudo para a versao anmterior  enquanto voce e sua equipe trabalham na manutencao do problema da versao atual e quando estiver tudo pronto, simplesmente fazem o deploy no repositorio de codigo, fazendo com que a aplicacao eteja "no ar" em poucos minutos.
+
+Sendo assim a integrcao continua permite que desenvolvedores consigam programar independentemente um do outro, no mesmo codigo, pois este sera sempre testado antes de ter seu commit aceito fazendo com que o processo de entrega de ssoftware e suas funcionalidades seja muito mais otimizado, automatico e escalavel, no sentidod de que equipes cada vez maiores de desenvolvedores sao capases de atuar na aplicacao sem conflitos em qualquer push que ocorre.
+
+## A Pipeline
+
+A pipeline e a "linha de producao", varios jobs que executam em tanto em paralelo quanto em sequencia, de automatizaacao dos processos de integracao continua e deploy automatizado.
+
+### A nossa pipeline
+
+A nossa pipeline se divide entre o processo de criacao "podTempletes", como estamos rodando em um cluster kubernetes com o objetivo de gerenciar os microsservissos que rodam sobre essa infraestrutura, usamos o jenkins com o plugin do Kubernetes, que utilizando-se de uma feature chamada de "podTemplate" e capaz de executar commandos dentro de pods, que podem rodar por exemplo, o runtime do docker. Ou o helm, facilitando a construcao de pipelines dentro do kubernetes cluster.
 Instalacao
 ------------
 ------------
