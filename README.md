@@ -437,7 +437,7 @@ Dadas as caracteristicas da aplicacao, um tempo de resposta maior do banco de da
 O Jenkins
 ----------------------
 ---------------------
-O Jenkins e uma ferramenta de [Continous Integration]() e [Countinous deployment](), serve para automatizar processos de desenvolvimento, como adimissao automatizada de commits e tambem e capas de fazer o deploy automatico dos codigos de uma ou mais branches de um repositorio. O que economiza tempo e possibilita uma entrega continua do servico sem atrasos, e ou sua aplicacao passar horas sem funcionar por conta de uma feature.
+O Jenkins e uma ferramenta de [Continous Integration]() e [Countinous deployment](), serve para automatizar processos de desenvolvimento, como adimissao automatizada de commits e tambem e capas de fazer o deploy automatico das aplicacoes. O que aumenta a eficiencia na entrega da aplicacao, alem de aumentar a eficiencia do desenvolvimento de novas features, visto que tanto a integracao de codigo de diferentes desenvolvedores, quanto o deploy da aplicacao tornam-se automatizados.
 O versionamento do codigo e uma ferramento de automatizacao de processos de integracao e de deploy como o jenkins, unidos podem evitar catastrofe. 
 
 Imagine um cenario onde e feito um deploy em uma apliccao numa sexta feira, e no domigo apos um pico inesperado de acessos a aplicacao "quebra", um cenario muito estranho para sua equipe visto que na versao anterior um fluxo ainda maior de acessos acontecia com uma certa frequencia. 
@@ -445,16 +445,17 @@ Apos esse problema temos algumas possiveis solucoes, colocar o site em manutenca
 
 Sendo assim a integrcao continua permite que desenvolvedores consigam programar independentemente um do outro, no mesmo codigo, pois este sera sempre testado antes de ter seu commit aceito fazendo com que o processo de entrega de ssoftware e suas funcionalidades seja muito mais otimizado, automatico e escalavel, no sentidod de que equipes cada vez maiores de desenvolvedores sao capases de atuar na aplicacao sem conflitos em qualquer push que ocorre.
 
-## A Pipeline
+## A Pipeline CI/CD
 
-A pipeline e a "linha de producao", varios jobs que executam em tanto em paralelo quanto em sequencia, de automatizaacao dos processos de integracao continua e deploy automatizado.
+A pipeline e a "linha de producao", varios jobs que automatizam as tarefas de entgrega da aplicaccao o "deploy". Essas tarefas garantem que o codigo sera testado antes que um commit seja aceito por exemplo, um exemplo de CI, ou simplesmente automatizam o processo de deploy, fazendo com que, por exemplo, todo commit na branch "\*/main" seja colocado em producao periodicamente (CD).
 
 ### A nossa pipeline
 
 Como estamos rodando em um cluster kubernetes com o objetivo de gerenciar os microsservissos que rodam sobre essa infraestrutura. Usamos o plugin do Kubernetes, que utilizando-se de uma feature chamada de "podTemplate" e capaz de executar commandos dentro de pods, que podem rodar por exemplo, o runtime do docker. Ou o helm, facilitando a construcao de pipelines dentro do cluster kubernetes.
 
+|-------------------- Criando o PodTemplate que executara esse job como um worker do jenkins
 ```!#/bin/bash
- podTemplate(
+ podTemplate( 
     containers: [
         containerTemplate(args: 'cat', name: 'docker', command: '/bin/sh -c', image: 'docker', ttyEnabled: true),
         containerTemplate(args: 'cat', command: '/bin/sh -c', image: 'lachlanevenson/k8s-helm:v3.5.2', name: 'helm', ttyEnabled: true),
@@ -462,46 +463,52 @@ Como estamos rodando em um cluster kubernetes com o objetivo de gerenciar os mic
 	containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:v2.6.0', command: 'cat', ttyEnabled: true),
 	containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.4.8', command: 'cat', ttyEnabled: true)
     ],
+```
+|-------------------- Crinado um volume compartilhado com o "Host", que aponta para o sock do docker. Fazendo com que apenas a instancia do docker no rost execute os comandos docker dentro do container
+```!#/bin/bash
     volumes: [
-        hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
+        hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock') 
     ]
+
+```
+|-------------------- Checando se ha alteracoes no repositorio e clonando-o
+```!#/bin/bash
 ) {
   def image = "gabrielknot/php_nginx"
-  def DOCKER_HUB_USER = "gabrileknot"
-  def DOCKER_IMAGE = "php_nginx"
-  def DOKER_IMAGE_REPO = "${DOCKER_HUB_USER }/${DOCKER_IMAGE}"
   node(POD_LABEL) {
     stage('Checkout') {
 	checkout scm
     }
+```
+|-------------------- Construindo a imagem docker, setando sua "tag" para o hash do commit e postando-a no docker hub.
+```!#/bin/bash
 
-    // stage('Build Docker image') {
-    //   gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-    //   container('docker') {
-    //     withDockerRegistry([credentialsId: 'dockerHub', url: ""]) {
-    //        sh "docker build -t ${image}:${gitCommit} ."
-    //        sh "docker push ${image}:${gitCommit}"
-    //     }
-    //   }
-    // }
+      stage('Build Docker image') {
+        gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+        container('docker') {
+          withDockerRegistry([credentialsId: 'dockerHub', url: ""]) {
+             sh "docker build -t ${image}:${gitCommit} ."
+             sh "docker push ${image}:${gitCommit}"
+          }
+        }
+      }
+
+```
+|-------------------- Fazendo o deploy do helm chart e setando o a tag da imagem para a mesma tag publicada no dockerHub no passo anterior
+```!#/bin/bash
       stage ('deploy to k8s') {
 	gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
         container('helm') {
           // Deploy using Helm chart
-          sh "helm install app laravel-app/"
+          sh """
+            helm upgrade --install --set image.tag=${gitCommit}
+        """
         }
      }
 }
 }
-
-// 
-// Rather than inline YAML, you could use: yaml: readTrusted('jenkins-pod.yaml')
-// Or, to avoid YAML: containers: [containerTemplate(name: 'maven', image: 'maven:3.6.3-jdk-8', command: 'sleep', args: 'infinity')]
-
-
-
-C
 ```
+
 Instalacao
 ------------
 ------------
