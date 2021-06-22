@@ -453,25 +453,25 @@ A pipeline e a "linha de producao", varios jobs que automatizam as tarefas de en
 
 Como estamos rodando em um cluster kubernetes com o objetivo de gerenciar os microsservissos que rodam sobre essa infraestrutura. Usamos o plugin do Kubernetes, que utilizando-se de uma feature chamada de "podTemplate" e capaz de executar commandos dentro de pods, que podem rodar por exemplo, o runtime do docker. Ou o helm, facilitando a construcao de pipelines dentro do cluster kubernetes.
 
-|-------------------- Criando o PodTemplate que executara esse job como um worker do jenkins
+**|**-------------------- **Criando o PodTemplate que executara esse job como um worker do jenkins**
 ```!#/bin/bash
  podTemplate( 
     containers: [
         containerTemplate(args: 'cat', name: 'docker', command: '/bin/sh -c', image: 'docker', ttyEnabled: true),
         containerTemplate(args: 'cat', command: '/bin/sh -c', image: 'lachlanevenson/k8s-helm:v3.5.2', name: 'helm', ttyEnabled: true),
-	containerTemplate(name: 'jnlp', image: 'lachlanevenson/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', workingDir: '/home/jenkins', resourceRequestCpu: '200m', resourceLimitCpu: '300m', resourceRequestMemory: '256Mi', resourceLimitMemory: '512Mi'),
-	containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:v2.6.0', command: 'cat', ttyEnabled: true),
-	containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.4.8', command: 'cat', ttyEnabled: true)
+	    containerTemplate(name: 'jnlp', image: 'lachlanevenson/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', workingDir: '/home/jenkins', resourceRequestCpu: '200m', resourceLimitCpu: '300m', resourceRequestMemory: '256Mi', resourceLimitMemory: '512Mi'),
+	    containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:v2.6.0', command: 'cat', ttyEnabled: true),
+	    containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.4.8', command: 'cat', ttyEnabled: true)
     ],
 ```
-|-------------------- Crinado um volume compartilhado com o "Host", que aponta para o sock do docker. Fazendo com que apenas a instancia do docker no rost execute os comandos docker dentro do container
+**|**-------------------- **Crinado um volume compartilhado com o "Host", que aponta para o sock do docker. Fazendo com que apenas a instancia do docker no rost execute os comandos docker dentro do container**
 ```!#/bin/bash
     volumes: [
         hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock') 
     ]
 
 ```
-|-------------------- Checando se ha alteracoes no repositorio e clonando-o
+**|**-------------------- **Checando se ha alteracoes no repositorio e clonando-o**
 ```!#/bin/bash
 ) {
   def image = "gabrielknot/php_nginx"
@@ -480,7 +480,7 @@ Como estamos rodando em um cluster kubernetes com o objetivo de gerenciar os mic
 	checkout scm
     }
 ```
-|-------------------- Construindo a imagem docker, setando sua "tag" para o hash do commit e postando-a no docker hub.
+**|**-------------------- **Construindo a imagem docker, setando sua "tag" para o hash do commit e postando-a no docker hub.**
 ```!#/bin/bash
 
       stage('Build Docker image') {
@@ -494,7 +494,7 @@ Como estamos rodando em um cluster kubernetes com o objetivo de gerenciar os mic
       }
 
 ```
-|-------------------- Fazendo o deploy do helm chart e setando o a tag da imagem para a mesma tag publicada no dockerHub no passo anterior
+**|**-------------------- **Fazendo o deploy do helm chart e setando o a tag da imagem para a mesma tag publicada no dockerHub no passo anterior**
 ```!#/bin/bash
       stage ('deploy to k8s') {
 	gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
@@ -508,13 +508,17 @@ Como estamos rodando em um cluster kubernetes com o objetivo de gerenciar os mic
 }
 }
 ```
+Certificacao SSL/TLS
+
+Os certificados digitais permitem uma comunicacao confiael entre o cliente e os sites que este acessa, essa comunicacao e criptografada em entre o cliente e o servidor, fazendo com que qualquer um que intercepte essa reqisicao no meio do caminho, nao consiga identificar o conteudo dessa comunicacao. Entretanto, e necessaria uma validacao de um terceiro confiavel. 
+
 
 Instalacao
 ------------
 ------------
 #### requisitos e suas instrucoes de instalacao:
 ***
-- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)**
 - [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
 
 ### Antes de instalar siga os seguintes passos para baixar a aplicacao:
