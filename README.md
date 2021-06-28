@@ -578,15 +578,12 @@ obs: Seu token deve ter permissoes de leitura de todas as zonas e de edicao de D
 
 5. Atualize os plugins do jenkins e esperem ate que terminem. Use o login "admin" e a senha "admin" e siga as instrucoes:
 
-   
 
-   1. <img src="" width="600">
+   1. ![alt text](https://github.com/gabrielknot/Documentation_Project/blob/main/update-plugins-1.png?raw=true)  
 
-   2. <img src="" width="600">
+   2. ![alt text](https://github.com/gabrielknot/Documentation_Project/blob/main/update-plugins-2.png?raw=true)  
 
-   3. <img src="" width="600">
-
-   4. <img src="" width="600">
+   3. ![alt text](https://github.com/gabrielknot/Documentation_Project/blob/main/update-plugins-3.png?raw=true)  
 
 
 6. Aguarde o termino da configuracao de seu servidor e pronto!
