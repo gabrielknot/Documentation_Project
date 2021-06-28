@@ -508,11 +508,31 @@ Como estamos rodando em um cluster kubernetes com o objetivo de gerenciar os mic
 }
 }
 ```
-Certificacao SSL/TLS
+# Certificacao SSL/TLS
 
 Os certificados digitais permitem uma comunicacao confiael entre o cliente e os sites que este acessa, essa comunicacao e criptografada em entre o cliente e o servidor, fazendo com que qualquer um que intercepte essa reqisicao no meio do caminho, nao consiga identificar o conteudo dessa comunicacao. Entretanto, e necessaria uma validacao de um terceiro confiavel. 
 
+## Como funciona:
 
+Um certificado digital solicitado por um mantenedor de um dominio a uma autoridade certificadora confiavel ao browser, de preferencia a maioria deles. Junto a esse certificado atestando que o site possui uma origem conhecida por essa entidade, o cliente recebe, tambem, a chave publica referente ao servidor com que se comuinica. Em posse dessa chave publica o cliente criptografa seus dados e envia para o servidor. Assim, os dados do cliente sao encriptados e o unico com capacidade computuacional de desdcriptografa-los e o servidor em posse da chave privada. Fazendo com que a comunicacao estabelecida, torne -se segura e confiavel.
+
+<img src="https://images.tcdn.com.br/img/editor/up/712075/howSSLworksdiagram.jpg" width="900">
+
+## Lets Encrypt
+
+O Lets Encrypt e uma dssas autoridades certificadoras, fornecem certificados SSL gratuitamente.
+
+## Cert bot
+
+O cert-bot automatiza a geracao de certificados em servidores de forma geral, permitindo um processo siples e guiado automatico na obtencao de certificados validados pelo Lets Encrypt
+
+## Cert-Maneger 
+
+O cert-manager gerencia os certificados do kubernetes, automatizando os processos de geracao de certificados de variadas autoridades certificadpras, e com integracao com apis de gerenciadore de DNS permitindo a geracao de certificados wild card.
+
+## Problemas e melhorias
+
+Usando o kubeadm sem utilizar cloud provider, meus subdominios acabam por apontar sempre pra um ip fixo do master. Sendo assim meu cluster so consegue lidar com um dominio por vez, ja que o dns vai sempre resolver, tanto os sub-dominios quanto os dominios para o mesmo ip.
 Instalacao
 ------------
 ------------
@@ -541,4 +561,32 @@ $ sed -i 's/PATH_CHAVEPRIVADA/<caminho para a chave privada que o ansible usará
 $ ssh-copy-id -i <path chave publica par da chave privada ssh que voce configurou no "inventory"> root@server
 $ ansible-playbook kubernetes-setup/master-playbook.yaml 
 ```
-4. Aguarde o termino da configuracao de seu servidor e pronto!
+
+4. Altere as variaveis padrao em ansible/kubernetes-setup/master-playbook.yaml
+
+```!#/bin/bash
+    ...
+    environment_ACME: 'dev'
+    my_cloudflare_mail: 'yourCLOUDFLAREmail@domain.com'
+    my_cloudflare_token: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    my_domain: 'domain.com'
+    my_lets_encrypt_mail:  'yourACMEmail@domain.com'
+    ...
+```
+
+obs: Seu token deve ter permissoes de leitura de todas as zonas e de edicao de DNS no [link](https://dash.cloudflare.com/profile/api-tokens), como descrito na documentacao do [cert-manager](https://cert-manager.io/docs/configuration/acme/dns01/cloudflare/)
+
+5. Atualize os plugins do jenkins e esperem ate que terminem. Use o login "admin" e a senha "admin" e siga as instrucoes:
+
+   
+
+   1. <img src="" width="600">
+
+   2. <img src="" width="600">
+
+   3. <img src="" width="600">
+
+   4. <img src="" width="600">
+
+
+6. Aguarde o termino da configuracao de seu servidor e pronto!
